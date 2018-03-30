@@ -116,7 +116,7 @@ add :: proc[
 ];
 
 append_string_indented :: proc(using options: GenOptions, text: string) {
-	for i in 0..indent {
+	if gen_indentation do for i in 0..indent {
 		append_string(out, "\t");
 	}
 	append_string(out, text);
@@ -133,7 +133,7 @@ gen_element :: proc(using options: GenOptions, using el: ^Element) {
 		append_string(out, "\"");
 	}
 
-	if body == "" && len(children) == 0 {
+	if (body == "" || body == " ") && len(children) == 0 {
 		append_string(out, "/>");
 		if gen_whitespace do append_string(out, "\n");
 	} else {
@@ -141,7 +141,7 @@ gen_element :: proc(using options: GenOptions, using el: ^Element) {
 		if gen_whitespace do append_string(out, "\n");
 		
 		indent += 1;
-		if body != "" {
+		if body != "" && body != " " {
 			append_string_indented(options, body);
 			if gen_whitespace do append_string(out, "\n");
 		}
@@ -151,7 +151,6 @@ gen_element :: proc(using options: GenOptions, using el: ^Element) {
 				child := children[i];
 				gen_element(options, child);
 			}
-			if gen_whitespace do append_string(out, "\n");
 		}
 		indent -= 1;
 
@@ -179,9 +178,11 @@ gen :: proc(using doc: ^Document, _gen_whitespace := true, _gen_indentation := t
 
 	append_string(out, "<!DOCTYPE ");
 	append_string(out, doctype);
-	append_string(out, ">\n");
+	append_string(out, ">");
+	if gen_whitespace do append_string(out, "\n");
 
-	append_string(out, "<html>\n");
+	append_string(out, "<html>");
+	if gen_whitespace do append_string(out, "\n");
 
 	indent += 1;
 	gen_element(options, head);
