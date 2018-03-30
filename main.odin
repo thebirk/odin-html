@@ -10,7 +10,10 @@ main :: proc() {
 	charset.attributes["charset"] = "UTF-8";
 	html.add(doc.head, charset);
 
-	html.add_css(doc, "./main.css");
+	html.set_lang(doc, "en");
+	html.add_title(doc, "This is a title!");
+	html.add_css_link(doc, "./main.css");
+	html.add_css(doc, "h1 { color: green; }");
 
 	title := html.make_heading("Hello, world!");
 	html.add(doc, title);
@@ -23,7 +26,7 @@ main :: proc() {
 
 	html.add(doc, html.br());
 
-	image := html.make_image("Lenna.png");
+	image := html.make_image("Lenna.png", "ooo alt text");
 	html.add(doc, image);
 
 	string_list_array := []string {

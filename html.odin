@@ -4,13 +4,15 @@ Copyright (C) - Aleksander B. Birkeland 2018
 Very basic HTML generator
 TODO(Some way to generate xml instead of html)
 
-Closes all tags including empty ones
+Weird quirks:
+	- Bodies with a value of only "" and " " are considered and empty body.
 
 */
 import "core:fmt.odin"
 
 Document :: struct {
 	doctype: string, // <!DOCTYPE <insert variable here> >
+	html_attributes: map[string]string,
 	head: ^Element,
 	body: ^Element,
 }
@@ -22,12 +24,29 @@ Element :: struct {
 	children: [dynamic]^Element,
 }
 
-add_css :: proc(doc: ^Document, path: string) {
+set_lang :: proc(doc: ^Document, lang: string) {
+	doc.html_attributes["lang"] = lang;
+}
+
+add_title :: proc(doc: ^Document, title: string) -> ^Element {
+	el := make_element("title", title);
+	add(doc.head, el);
+	return el;
+}
+
+add_css :: proc(doc: ^Document, css: string) -> ^Element {
+	el := make_element("style", css);
+	add(doc.head, el);
+	return el;
+}
+
+add_css_link :: proc(doc: ^Document, path: string) -> ^Element {
 	el := make_element("link");
 	el.attributes["rel"] = "stylesheet";
 	el.attributes["type"] = "text/css";
 	el.attributes["href"] = path;
 	add(doc.head, el);
+	return el;
 }
 
 make :: proc(_doctype: string = "html") -> ^Document {
@@ -112,11 +131,13 @@ make_link :: proc(text: string, link: string) -> ^Element {
 	return el;
 }
 
-make_image :: proc(src: string) -> ^Element {
+make_image :: proc(src: string, alt: string = "") -> ^Element {
 	el := new(Element);
 
 	el.name = "img";
 	el.attributes["src"] = src;
+	el.attributes["alt"] = alt;
+	el.attributes["title"] = alt;
 
 	return el;
 }
@@ -202,7 +223,15 @@ gen :: proc(using doc: ^Document, _gen_whitespace := true, _gen_indentation := t
 	append_string(out, ">");
 	if gen_whitespace do append_string(out, "\n");
 
-	append_string(out, "<html>");
+	append_string(out, "<html");
+	for key,value in html_attributes {
+		append_string(out, " ");
+		append_string(out, key);
+		append_string(out, "=\"");
+		append_string(out, value);
+		append_string(out, "\"");
+	}
+	append_string(out, ">");
 	if gen_whitespace do append_string(out, "\n");
 
 	indent += 1;
