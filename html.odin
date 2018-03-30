@@ -25,11 +25,8 @@ make :: proc(_doctype: string = "html") -> ^Document {
 	using d := new(Document);
 	doctype = _doctype;
 
-	head = new(Element);
-	head.name = "head";
-
-	body = new(Element);
-	body.name = "body";
+	head = make_element("head", " ");
+	body = make_element("body", " ");
 
 	return d;
 }
@@ -52,6 +49,11 @@ make_paragraph :: proc(text: string) -> ^Element {
 	return el;
 }
 
+_br_element := Element{name = "br"};
+br :: proc() -> ^Element {
+	return &_br_element;
+}
+
 make_list_from_elements :: proc(data: []^Element) -> ^Element {
 	el := new(Element);
 
@@ -59,6 +61,7 @@ make_list_from_elements :: proc(data: []^Element) -> ^Element {
 	for child in data {
 		item := make_element("li");
 		add(item, child);
+		add(el, item);
 	}
 
 	return el;
@@ -112,8 +115,15 @@ add :: proc[
 	add_to_element,
 ];
 
-gen_element :: proc(out: ^[dynamic]u8, using el: ^Element) {
-	append_string(out, "<");
+append_string_indented :: proc(using options: GenOptions, text: string) {
+	for i in 0..indent {
+		append_string(out, "\t");
+	}
+	append_string(out, text);
+}
+
+gen_element :: proc(using options: GenOptions, using el: ^Element) {
+	append_string_indented(options, "<");
 	append_string(out, name);
 	for key,value in attributes {
 		append_string(out, " ");
@@ -122,18 +132,34 @@ gen_element :: proc(out: ^[dynamic]u8, using el: ^Element) {
 		append_string(out, value);
 		append_string(out, "\"");
 	}
-	append_string(out, ">\n");
 
-	append_string(out, body);
+	if body == "" && len(children) == 0 {
+		append_string(out, "/>");
+		if gen_whitespace do append_string(out, "\n");
+	} else {
+		append_string(out, ">");
+		if gen_whitespace do append_string(out, "\n");
+		
+		indent += 1;
+		if body != "" {
+			append_string_indented(options, body);
+			if gen_whitespace do append_string(out, "\n");
+		}
 
-	for i := 0; i < len(children); i += 1 {
-		child := children[i];
-		gen_element(out, child);
+		if len(children) > 0 {
+			for i := 0; i < len(children); i += 1 {
+				child := children[i];
+				gen_element(options, child);
+			}
+			if gen_whitespace do append_string(out, "\n");
+		}
+		indent -= 1;
+
+		append_string_indented(options, "</");
+		append_string(out, name);
+		append_string(out, ">");
+		if gen_whitespace do append_string(out, "\n");
 	}
-
-	append_string(out, "\n</");
-	append_string(out, name);
-	append_string(out, ">\n");
 }
 
 GenOptions :: struct {
@@ -157,8 +183,10 @@ gen :: proc(using doc: ^Document, _gen_whitespace := true, _gen_indentation := t
 
 	append_string(out, "<html>\n");
 
-	gen_element(out, head);
-	gen_element(out, body);
+	indent += 1;
+	gen_element(options, head);
+	gen_element(options, body);
+	indent -= 1;
 
 	append_string(out, "</html>");
 
