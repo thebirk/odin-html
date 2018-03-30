@@ -10,8 +10,13 @@ main :: proc() {
 	charset.attributes["charset"] = "UTF-8";
 	html.add(doc.head, charset);
 
-	title := html.make_element(name = "p", body = "Hello, world!");
+	html.add_css(doc, "./main.css");
+
+	title := html.make_heading("Hello, world!");
 	html.add(doc, title);
+
+	sub_title := html.make_heading("Quiter hello world!", 3);
+	html.add(doc, sub_title);
 
 	link := html.make_link("Here", "#");
 	html.add(doc, link);

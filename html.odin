@@ -7,6 +7,7 @@ TODO(Some way to generate xml instead of html)
 Closes all tags including empty ones
 
 */
+import "core:fmt.odin"
 
 Document :: struct {
 	doctype: string, // <!DOCTYPE <insert variable here> >
@@ -19,6 +20,14 @@ Element :: struct {
 	body: string,
 	attributes: map[string]string,
 	children: [dynamic]^Element,
+}
+
+add_css :: proc(doc: ^Document, path: string) {
+	el := make_element("link");
+	el.attributes["rel"] = "stylesheet";
+	el.attributes["type"] = "text/css";
+	el.attributes["href"] = path;
+	add(doc.head, el);
 }
 
 make :: proc(_doctype: string = "html") -> ^Document {
@@ -36,6 +45,16 @@ make_element :: proc(name: string, body := "") -> ^Element {
 
 	el.name = name;
 	el.body = body;
+
+	return el;
+}
+
+make_heading :: proc(text: string, level := 1) -> ^Element {
+	#assert(level >= 1 && level <= 6);
+	el := new(Element);
+
+	el.name = fmt.aprintf("h%v", level);
+	el.body = text;
 
 	return el;
 }
