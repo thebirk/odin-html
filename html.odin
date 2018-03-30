@@ -136,7 +136,7 @@ add :: proc[
 
 append_string_indented :: proc(using options: GenOptions, text: string) {
 	if gen_indentation do for i in 0..indent {
-		append_string(out, "\t");
+		append_string(out, indent_string);
 	}
 	append_string(out, text);
 }
@@ -185,14 +185,16 @@ GenOptions :: struct {
 	gen_whitespace: bool,
 	gen_indentation: bool,
 	indent: int = 0,
+	indent_string: string,
 }
 
-gen :: proc(using doc: ^Document, _gen_whitespace := true, _gen_indentation := true) -> [dynamic]u8 {
+gen :: proc(using doc: ^Document, _gen_whitespace := true, _gen_indentation := true, _indent_string: string = "\t") -> [dynamic]u8 {
 	out_buffer: [dynamic]u8;
 	using options := GenOptions {
 		out = &out_buffer,
 		gen_whitespace = _gen_whitespace,
 		gen_indentation = _gen_indentation,
+		indent_string = _indent_string,
 	};
 
 	append_string(out, "<!DOCTYPE ");

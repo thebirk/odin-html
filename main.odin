@@ -49,6 +49,6 @@ main :: proc() {
 	element_list := html.make_list(element_list_array);
 	html.add(doc, element_list);
 
-	data := html.gen(doc, true, true);
+	data := html.gen(doc);
 	os.write_entire_file("test.html", data[..]);
 }
