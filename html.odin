@@ -50,7 +50,7 @@ add_css_link :: proc(doc: ^Document, path: string) -> ^Element {
 	return el;
 }
 
-make :: proc(_doctype: string = "html") -> ^Document {
+make_document :: proc(_doctype: string = "html") -> ^Document {
 	using d := new(Document);
 	doctype = _doctype;
 

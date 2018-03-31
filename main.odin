@@ -14,7 +14,7 @@ TODO:
 */
 
 main :: proc() {
-	doc := html.make();
+	doc := html.make_document();
 
 	//html.add(doc, html.make_element("not valid"));
 
