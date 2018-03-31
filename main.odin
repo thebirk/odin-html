@@ -3,8 +3,20 @@ import "core:os.odin"
 
 import "html.odin"
 
+/*
+
+TODO:
+ - Add insert ability, html.insert_after(doc, aftert_element, insert_element)
+ - Append to lists, must add <li> around the element (append_string, append_element)
+ - Switch to using append instead of add?
+ - Return validation bool from html.gen
+
+*/
+
 main :: proc() {
 	doc := html.make();
+
+	//html.add(doc, html.make_element("not valid"));
 
 	charset := html.make_element("meta");
 	charset.attributes["charset"] = "UTF-8";

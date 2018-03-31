@@ -9,6 +9,7 @@ Weird quirks:
 
 */
 import "core:fmt.odin"
+import "core:strings.odin"
 
 Document :: struct {
 	doctype: string, // <!DOCTYPE <insert variable here> >
@@ -161,7 +162,25 @@ append_string_indented :: proc(using options: GenOptions, text: string) {
 	append_string(out, text);
 }
 
-gen_element :: proc(using options: GenOptions, using el: ^Element) {
+validate_element :: proc(using el: ^Element) -> bool {
+	for r in name {
+		if r >= '0' && r <= '9' do continue;
+		if r >= 'a' && r <= 'z' do continue;
+		if r >= 'A' && r <= 'Z' do continue;
+
+		fmt.printf("Element names should only contain 0-9,a-z,A-Z found '%v'! Element name: '%s'\n", r, name);
+		return false;
+	}
+
+	// check case-insensitive match with attributes
+	// http://w3c.github.io/html-reference/syntax.html#tag-name
+
+	return true;
+}
+
+gen_element :: proc(using options: GenOptions, using el: ^Element) -> bool {
+	if validate_element(el) == false do return false;
+
 	append_string_indented(options, "<");
 	append_string(out, name);
 	for key,value in attributes {
@@ -198,6 +217,8 @@ gen_element :: proc(using options: GenOptions, using el: ^Element) {
 		append_string(out, ">");
 		if gen_whitespace do append_string(out, "\n");
 	}
+
+	return true;
 }
 
 GenOptions :: struct {
