@@ -87,9 +87,8 @@ make_paragraph :: proc(text: string) -> ^Element {
 	return el;
 }
 
-_br_element := Element{name = "br"};
-br :: proc() -> ^Element {
-	return &_br_element;
+make_br :: proc() -> ^Element {
+	return make_element("br");
 }
 
 make_list_from_elements :: proc(data: []^Element) -> ^Element {

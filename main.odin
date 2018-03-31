@@ -24,7 +24,7 @@ main :: proc() {
 	link := html.make_link("Here", "#");
 	html.add(doc, link);
 
-	html.add(doc, html.br());
+	html.add(doc, html.make_br());
 
 	image := html.make_image("Lenna.png", "ooo alt text");
 	html.add(doc, image);
@@ -39,7 +39,7 @@ main :: proc() {
 	string_list := html.make_list(string_list_array);
 	html.add(doc, string_list);
 
-	html.add(doc, html.br());
+	html.add(doc, html.make_br());
 
 	element_list_array := []^html.Element {
 		html.make_paragraph("This"),
