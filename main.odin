@@ -6,8 +6,8 @@ import "html.odin"
 /*
 
 TODO:
+ - Add optional arguments like class,id,etc. to all make_* procs
  - Add insert ability, html.insert_after(doc, aftert_element, insert_element)
- - Append to lists, must add <li> around the element (append_string, append_element)
  - Switch to using append instead of add?
  - Return validation bool from html.gen
 
@@ -18,11 +18,8 @@ main :: proc() {
 
 	//html.add(doc, html.make_element("not valid"));
 
-	charset := html.make_element("meta");
-	charset.attributes["charset"] = "UTF-8";
-	html.add(doc.head, charset);
-
 	html.set_lang(doc, "en");
+	html.add_charset(doc); // Defaults to "UTF-8"
 	html.add_title(doc, "This is a title!");
 	html.add_css_link(doc, "./main.css");
 	html.add_css(doc, "h1 { color: green; }");
@@ -34,6 +31,7 @@ main :: proc() {
 	html.add(doc, sub_title);
 
 	link := html.make_link("Here", "#");
+	html.set_id(link, "important-link");
 	html.add(doc, link);
 
 	html.add(doc, html.make_br());
@@ -49,7 +47,9 @@ main :: proc() {
 		"!",
 	};
 	string_list := html.make_list(string_list_array);
+	html.set_class(string_list, "red");
 	html.add(doc, string_list);
+	html.append_to_list(string_list, "Appendage!");
 
 	html.add(doc, html.make_br());
 
@@ -62,7 +62,9 @@ main :: proc() {
 		html.make_paragraph("!"),
 	};
 	element_list := html.make_list(element_list_array);
+	html.set_class(element_list, "green");
 	html.add(doc, element_list);
+	html.append_to_list(element_list, html.make_paragraph("Even more appendage!"));
 
 	data := html.gen(doc);
 	os.write_entire_file("test.html", data[..]);

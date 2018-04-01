@@ -1,3 +1,15 @@
 html,body {
 	background: grey;
 }
+
+#important-link {
+	font-size: 2em;
+}
+
+.green {
+	color: green;
+}
+
+.red {
+	color: red;
+}

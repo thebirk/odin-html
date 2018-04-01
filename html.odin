@@ -29,6 +29,21 @@ set_lang :: proc(doc: ^Document, lang: string) {
 	doc.html_attributes["lang"] = lang;
 }
 
+set_id :: proc(using el: ^Element, id: string) {
+	attributes["id"] = id;
+}
+
+set_class :: proc(using el: ^Element, class: string) {
+	attributes["class"] = class;
+}
+
+add_charset :: proc(doc: ^Document, charset: string = "UTF-8") -> ^Element {
+	el := make_element("meta");
+	el.attributes["charset"] = charset;
+	add(doc.head, el);
+	return el;
+}
+
 add_title :: proc(doc: ^Document, title: string) -> ^Element {
 	el := make_element("title", title);
 	add(doc.head, el);
@@ -110,7 +125,9 @@ make_list_from_array :: proc(data: []string) -> ^Element {
 
 	el.name = "ul";
 	for str in data {
-		add(el, make_element(name = "li", body = str));
+		li := make_element("li");
+		add(li, make_paragraph(str));
+		add(el, li);
 	}
 
 	return el;
@@ -119,6 +136,22 @@ make_list_from_array :: proc(data: []string) -> ^Element {
 make_list :: proc[
 	make_list_from_array,
 	make_list_from_elements,
+];
+
+append_string_to_list :: proc(using list: ^Element, str: string) {
+	li := make_element(name = "li", body = str);
+	add(list, li);
+}
+
+append_element_to_list :: proc(using list: ^Element, el: ^Element) {
+	li := make_element("li");
+	add(li, el);
+	add(list, li);
+}
+
+append_to_list :: proc[
+	append_element_to_list,
+	append_string_to_list,
 ];
 
 make_link :: proc(text: string, link: string) -> ^Element {
