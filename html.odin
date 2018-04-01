@@ -4,9 +4,6 @@ Copyright (C) - Aleksander B. Birkeland 2018
 Very basic HTML generator
 TODO(Some way to generate xml instead of html)
 
-Weird quirks:
-	- Bodies with a value of only "" and " " are considered and empty body.
-
 */
 import "core:fmt.odin"
 import "core:strings.odin"
@@ -26,15 +23,15 @@ Element :: struct {
 	children: [dynamic]^Element,
 }
 
-set_lang :: proc(doc: ^Document, lang: string) {
+lang :: proc(doc: ^Document, lang: string) {
 	doc.html_attributes["lang"] = lang;
 }
 
-set_id :: proc(using el: ^Element, id: string) {
+id :: proc(using el: ^Element, id: string) {
 	attributes["id"] = id;
 }
 
-set_class :: proc(using el: ^Element, class: string) {
+class :: proc(using el: ^Element, class: string) {
 	attributes["class"] = class;
 }
 
@@ -70,8 +67,8 @@ make_document :: proc(_doctype: string = "html") -> ^Document {
 	using d := new(Document);
 	doctype = _doctype;
 
-	head = make_element("head", " ");
-	body = make_element("body", " ");
+	head = make_element("head");
+	body = make_element("body");
 
 	return d;
 }
@@ -81,8 +78,8 @@ make_element :: proc(name: string, body := "", class := "", id := "") -> ^Elemen
 
 	el.name = name;
 	el.body = body;
-	el.attributes["class"] = class;
-	el.attributes["id"] = id;
+	if(class != "") do el.attributes["class"] = class;
+	if(id != "") do el.attributes["id"] = id;
 
 	return el;
 }
@@ -230,7 +227,7 @@ gen_element :: proc(using options: GenOptions, using el: ^Element) -> bool {
 		append_string(out, "\"");
 	}
 
-	if (body == "" || body == " ") && len(children) == 0 {
+	if (body == "") && len(children) == 0 {
 		append_string(out, "/>");
 		if gen_whitespace do append_string(out, "\n");
 	} else {
@@ -238,7 +235,7 @@ gen_element :: proc(using options: GenOptions, using el: ^Element) -> bool {
 		if gen_whitespace do append_string(out, "\n");
 		
 		indent += 1;
-		if body != "" && body != " " {
+		if body != "" {
 			append_string_indented(options, body);
 			if gen_whitespace do append_string(out, "\n");
 		}
@@ -256,7 +253,6 @@ gen_element :: proc(using options: GenOptions, using el: ^Element) -> bool {
 		append_string(out, ">");
 		if gen_whitespace do append_string(out, "\n");
 	}
-
 	return true;
 }
 

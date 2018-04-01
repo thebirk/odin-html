@@ -10,6 +10,9 @@ TODO:
  - Add insert ability, html.insert_after(doc, aftert_element, insert_element)
  - Switch to using append instead of add?
  - Return validation bool from html.gen
+ - "Cache" head tags in functions like title,charsetm,etc.
+ - Support altering between body text and elements
+   - union{string,^Element}
 
 */
 
@@ -17,6 +20,7 @@ main :: proc() {
 	doc := html.make_document();
 
 	html.title(doc, "Amazing");
+	html.lang(doc, "en");
 
 	html.append(doc, html.h("Test"));
 	html.append(doc, html.img(
