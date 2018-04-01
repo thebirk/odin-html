@@ -139,7 +139,8 @@ make_list :: proc[
 ];
 
 append_string_to_list :: proc(using list: ^Element, str: string) {
-	li := make_element(name = "li", body = str);
+	li := make_element(name = "li");
+	add(li, make_paragraph(str));
 	add(list, li);
 }
 
