@@ -14,6 +14,7 @@ import "core:strings.odin"
 Document :: struct {
 	doctype: string, // <!DOCTYPE <insert variable here> >
 	html_attributes: map[string]string,
+	special_head_tags: map[string]^Element,
 	head: ^Element,
 	body: ^Element,
 }
@@ -37,31 +38,31 @@ set_class :: proc(using el: ^Element, class: string) {
 	attributes["class"] = class;
 }
 
-add_charset :: proc(doc: ^Document, charset: string = "UTF-8") -> ^Element {
+append_charset :: proc(doc: ^Document, charset: string = "UTF-8") -> ^Element {
 	el := make_element("meta");
 	el.attributes["charset"] = charset;
-	add(doc.head, el);
+	append(doc.head, el);
 	return el;
 }
 
-add_title :: proc(doc: ^Document, title: string) -> ^Element {
+title :: proc(doc: ^Document, title: string) -> ^Element {
 	el := make_element("title", title);
-	add(doc.head, el);
+	append(doc.head, el);
 	return el;
 }
 
-add_css :: proc(doc: ^Document, css: string) -> ^Element {
+append_css :: proc(doc: ^Document, css: string) -> ^Element {
 	el := make_element("style", css);
-	add(doc.head, el);
+	append(doc.head, el);
 	return el;
 }
 
-add_css_link :: proc(doc: ^Document, path: string) -> ^Element {
+append_css_link :: proc(doc: ^Document, path: string) -> ^Element {
 	el := make_element("link");
 	el.attributes["rel"] = "stylesheet";
 	el.attributes["type"] = "text/css";
 	el.attributes["href"] = path;
-	add(doc.head, el);
+	append(doc.head, el);
 	return el;
 }
 
@@ -75,16 +76,18 @@ make_document :: proc(_doctype: string = "html") -> ^Document {
 	return d;
 }
 
-make_element :: proc(name: string, body := "") -> ^Element {
+make_element :: proc(name: string, body := "", class := "", id := "") -> ^Element {
 	el := new(Element);
 
 	el.name = name;
 	el.body = body;
+	el.attributes["class"] = class;
+	el.attributes["id"] = id;
 
 	return el;
 }
 
-make_heading :: proc(text: string, level := 1) -> ^Element {
+h :: proc(text: string, level := 1) -> ^Element {
 	#assert(level >= 1 && level <= 6);
 	el := new(Element);
 
@@ -94,7 +97,7 @@ make_heading :: proc(text: string, level := 1) -> ^Element {
 	return el;
 }
 
-make_paragraph :: proc(text: string) -> ^Element {
+p :: proc(text: string) -> ^Element {
 	el := new(Element);
 
 	el.name = "p";
@@ -103,8 +106,9 @@ make_paragraph :: proc(text: string) -> ^Element {
 	return el;
 }
 
-make_br :: proc() -> ^Element {
-	return make_element("br");
+br :: proc() -> ^Element {
+	br := make_element("br");
+	return br;
 }
 
 make_list_from_elements :: proc(data: []^Element) -> ^Element {
@@ -113,8 +117,8 @@ make_list_from_elements :: proc(data: []^Element) -> ^Element {
 	el.name = "ul";
 	for child in data {
 		item := make_element("li");
-		add(item, child);
-		add(el, item);
+		append(item, child);
+		append(el, item);
 	}
 
 	return el;
@@ -126,8 +130,8 @@ make_list_from_array :: proc(data: []string) -> ^Element {
 	el.name = "ul";
 	for str in data {
 		li := make_element("li");
-		add(li, make_paragraph(str));
-		add(el, li);
+		append(li, p(str));
+		append(el, li);
 	}
 
 	return el;
@@ -140,14 +144,14 @@ make_list :: proc[
 
 append_string_to_list :: proc(using list: ^Element, str: string) {
 	li := make_element(name = "li");
-	add(li, make_paragraph(str));
-	add(list, li);
+	append(li, p(str));
+	append(list, li);
 }
 
 append_element_to_list :: proc(using list: ^Element, el: ^Element) {
 	li := make_element("li");
-	add(li, el);
-	add(list, li);
+	append(li, el);
+	append(list, li);
 }
 
 append_to_list :: proc[
@@ -155,7 +159,7 @@ append_to_list :: proc[
 	append_string_to_list,
 ];
 
-make_link :: proc(text: string, link: string) -> ^Element {
+link :: proc(text: string, link: string) -> ^Element {
 	el := new(Element);
 
 	el.name = "a";
@@ -165,28 +169,29 @@ make_link :: proc(text: string, link: string) -> ^Element {
 	return el;
 }
 
-make_image :: proc(src: string, alt: string = "") -> ^Element {
+img :: proc(src: string, alt: string = "", title: string = "") -> ^Element {
 	el := new(Element);
 
 	el.name = "img";
 	el.attributes["src"] = src;
 	el.attributes["alt"] = alt;
-	el.attributes["title"] = alt;
+	el.attributes["title"] = title;
 
 	return el;
 }
 
-add_to_document :: proc(using doc: ^Document, child: ^Element) {
+append_to_document :: proc(using doc: ^Document, child: ^Element) {
 	append(&body.children, child);
 }
 
-add_to_element :: proc(using parent: ^Element, child: ^Element) {
+append_to_element :: proc(using parent: ^Element, child: ^Element) {
 	append(&parent.children, child);
 }
 
-add :: proc[
-	add_to_document,
-	add_to_element,
+append :: proc[
+	_global.append,
+	append_to_document,
+	append_to_element,
 ];
 
 append_string_indented :: proc(using options: GenOptions, text: string) {

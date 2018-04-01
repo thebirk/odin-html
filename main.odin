@@ -16,6 +16,22 @@ TODO:
 main :: proc() {
 	doc := html.make_document();
 
+	html.title(doc, "Amazing");
+
+	html.append(doc, html.h("Test"));
+	html.append(doc, html.img(
+		src = "Lenna.png",
+		alt = "Commonly used test image of model Lena Söderberg.",
+		title = "Commonly used test image of model Lena Söderberg.")
+	);
+
+	data := html.gen(doc);
+	os.write_entire_file("test.html", data[..]);	
+}
+
+/*main :: proc() {
+	doc := html.make_document();
+
 	//html.add(doc, html.make_element("not valid"));
 
 	html.set_lang(doc, "en");
@@ -68,4 +84,4 @@ main :: proc() {
 
 	data := html.gen(doc);
 	os.write_entire_file("test.html", data[..]);
-}
+}*/
