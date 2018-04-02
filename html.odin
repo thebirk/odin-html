@@ -35,7 +35,15 @@ class :: proc(using el: ^Element, class: string) {
 	attributes["class"] = class;
 }
 
-append_charset :: proc(doc: ^Document, charset: string = "UTF-8") -> ^Element {
+meta :: proc(doc: ^Document, name: string, content: string) -> ^Element {
+	el := make_element("meta");
+	el.attributes["name"] = name;
+	el.attributes["content"] = content;
+	append(doc.head, el);
+	return el;
+}
+
+charset :: proc(doc: ^Document, charset: string = "UTF-8") -> ^Element {
 	el := make_element("meta");
 	el.attributes["charset"] = charset;
 	append(doc.head, el);
@@ -104,8 +112,11 @@ p :: proc(text: string) -> ^Element {
 }
 
 br :: proc() -> ^Element {
-	br := make_element("br");
-	return br;
+	return make_element("br");
+}
+
+hr :: proc() -> ^Element {
+	return make_element("hr");
 }
 
 make_list_from_elements :: proc(data: []^Element) -> ^Element {
@@ -134,7 +145,7 @@ make_list_from_array :: proc(data: []string) -> ^Element {
 	return el;
 }
 
-make_list :: proc[
+list :: proc[
 	make_list_from_array,
 	make_list_from_elements,
 ];

@@ -21,8 +21,29 @@ main :: proc() {
 
 	html.title(doc, "Amazing");
 	html.lang(doc, "en");
+	html.charset(doc);
+	html.meta(doc, "viewport", "width=device-width, initial-scale=1.0");
 
 	html.append(doc, html.h("Test"));
+	html.append(doc, html.hr());
+
+	html.append(doc, html.list([]^html.Element {
+		html.link("Home", "#"),
+		html.link("Shop", "#store"),
+		html.link("News", "#news"),
+		html.link("About Us", "#about"),
+	}));
+
+	html.append(doc, html.br());
+	html.append(doc, html.list([]string {
+		"Some",
+		"Words",
+		"Are",
+		"Better",
+		"Than",
+		"Others",
+	}));
+
 	html.append(doc, html.img(
 		src = "Lenna.png",
 		alt = "Commonly used test image of model Lena Söderberg.",
