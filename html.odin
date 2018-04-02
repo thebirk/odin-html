@@ -44,15 +44,29 @@ meta :: proc(doc: ^Document, name: string, content: string) -> ^Element {
 }
 
 charset :: proc(doc: ^Document, charset: string = "UTF-8") -> ^Element {
-	el := make_element("meta");
-	el.attributes["charset"] = charset;
-	append(doc.head, el);
+	el, ok := doc.special_head_tags["charset"];
+	if ok {
+		el.attributes["charset"] = charset;
+	} else {
+		el = make_element("meta");
+		el.attributes["charset"] = charset;
+		append(doc.head, el);
+
+		doc.special_head_tags["charset"] = el;
+	}
 	return el;
 }
 
 title :: proc(doc: ^Document, title: string) -> ^Element {
-	el := make_element("title", title);
-	append(doc.head, el);
+	el, ok := doc.special_head_tags["title"];
+	if ok {
+		el.body = title;
+	} else {
+		el := make_element("title", title);
+		append(doc.head, el);
+
+		doc.special_head_tags["title"] = el;
+	}
 	return el;
 }
 
@@ -90,6 +104,10 @@ make_element :: proc(name: string, body := "", class := "", id := "") -> ^Elemen
 	if(id != "") do el.attributes["id"] = id;
 
 	return el;
+}
+
+div :: proc() -> ^Element {
+	return make_element("div");
 }
 
 h :: proc(text: string, level := 1) -> ^Element {

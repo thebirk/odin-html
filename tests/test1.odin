@@ -11,19 +11,19 @@ Post :: struct {
 
 make_post :: proc(title_text: string, author_text: string, body_text: string) -> Post {
 	using post: Post;
-	element = html.make_element("div");
-	html.set_class(element, "post");
+	element = html.div();
+	html.class(element, "post");
 
-	title = html.make_heading(title_text, 2);
-	html.add(element, title);
+	title = html.h(title_text, 2);
+	html.append(element, title);
 
-	author = html.make_heading(author_text, 4);
-	html.add(element, author);
+	author = html.h(author_text, 4);
+	html.append(element, author);
 
-	html.add(element, html.make_element("hr"));
+	html.append(element, html.hr());
 
-	body = html.make_paragraph(body_text);
-	html.add(element, body);
+	body = html.p(body_text);
+	html.append(element, body);
 
 	return post;
 }
@@ -31,15 +31,12 @@ make_post :: proc(title_text: string, author_text: string, body_text: string) ->
 main :: proc() {
 	doc := html.make_document();
 
-	html.add_charset(doc);
-	html.add_title(doc, "Neat");
-
-	viewport := html.make_element("meta");
-	viewport.attributes["name"] = "viewport";
-	viewport.attributes["content"] = "width=device-width, initial-scale=1";
-	html.add(doc.head, viewport);
+	html.lang(doc, "en");
+	html.title(doc, "Neat");
+	html.charset(doc);
+	html.meta(doc, "viewport", "width=device-width, initial-scale=1");
 	
-	html.add_css(doc,
+	html.append_css(doc,
 `
 html,body {
 	background-color: white;
@@ -78,29 +75,29 @@ html,body {
 }
 `);
 
-	title := html.make_heading("Neat");
-	html.set_id(title, "title");
-	html.add(doc, title);
+	title := html.h("Neat");
+	html.id(title, "title");
+	html.append(doc, title);
 
 	title_line := html.make_element("hr");
-	html.add(doc, title_line);
+	html.append(doc, html.hr());
 
-	post_div := html.make_element("div");
-	html.add(doc, post_div);
-	html.set_id(post_div, "posts");
+	post_div := html.div();
+	html.id(post_div, "posts");
+	html.append(doc, post_div);
 
-	html.add(post_div, make_post("We want more", "by internetjerk321", "We want more posts!!").element);
-	html.add(post_div, make_post("Here is more", "by niceguy2", "https://goodstuff.com/").element);
-	html.add(post_div, make_post("Even more", "by randy", "https://catpics.net/").element);
-	html.add(post_div, make_post("Even more", "by randy", "https://catpics.net/").element);
-	html.add(post_div, make_post("Even more", "by randy", "https://catpics.net/").element);
-	html.add(post_div, make_post("Even more", "by randy", "https://catpics.net/").element);
+	html.append(post_div, make_post("We want more", "by internetjerk321", "We want more posts!!").element);
+	html.append(post_div, make_post("Here is more", "by niceguy2", "https://goodstuff.com/").element);
+	html.append(post_div, make_post("Even more", "by randy", "https://catpics.net/").element);
+	html.append(post_div, make_post("Even more", "by randy", "https://catpics.net/").element);
+	html.append(post_div, make_post("Even more", "by randy", "https://catpics.net/").element);
+	html.append(post_div, make_post("Even more", "by randy", "https://catpics.net/").element);
 
-	table_div := html.make_element("div");
-	html.add(doc, table_div);
-	html.set_id(table_div, "table");
+	table_div := html.div();
+	html.id(table_div, "table");
+	html.append(doc, table_div);
 
-	html.add(table_div, html.make_paragraph("Text!"));
+	html.append(table_div, html.p("Text!"));
 
 	data := html.gen(doc);
 	os.write_entire_file("test1.html", data[..]);

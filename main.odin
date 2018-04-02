@@ -8,19 +8,20 @@ import "html.odin"
 TODO:
  - Add optional arguments like class,id,etc. to all make_* procs
  - Add insert ability, html.insert_after(doc, aftert_element, insert_element)
- - Switch to using append instead of add?
- - Return validation bool from html.gen
  - "Cache" head tags in functions like title,charsetm,etc.
  - Support altering between body text and elements
    - union{string,^Element}
+ - Return validation bool from html.gen
 
 */
 
 main :: proc() {
 	doc := html.make_document();
 
-	html.title(doc, "Amazing");
 	html.lang(doc, "en");
+	html.title(doc, "Amazing");
+	html.title(doc, "I changed my mind.");
+	html.charset(doc, "invalid");
 	html.charset(doc);
 	html.meta(doc, "viewport", "width=device-width, initial-scale=1.0");
 
@@ -47,8 +48,8 @@ main :: proc() {
 	html.append(doc, html.img(
 		src = "Lenna.png",
 		alt = "Commonly used test image of model Lena Söderberg.",
-		title = "Commonly used test image of model Lena Söderberg.")
-	);
+		title = "Commonly used test image of model Lena Söderberg."
+	));
 
 	data := html.gen(doc);
 	os.write_entire_file("test.html", data[..]);	
